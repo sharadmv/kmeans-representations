@@ -9,7 +9,7 @@ from path import Path
 
 from spherecluster import SphericalKMeans
 
-from zca import ZCA
+from kmeans import ZCA
 
 def parse_args():
     argparser = ArgumentParser()
