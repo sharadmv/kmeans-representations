@@ -16,7 +16,7 @@ if __name__ == "__main__":
             increment = int(num_centers / 10)
         else:
             increment = int(num_centers / 100)
-        for top_centers in range(increment, num_centers + increment, increment):
+        for top_centers in range(95 * increment, num_centers + increment, increment):
             print("Running with parameters: %u / %u" % (top_centers, num_centers))
             python(cmd,
                     **{
