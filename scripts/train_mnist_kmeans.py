@@ -15,6 +15,8 @@ def parse_args():
     argparser = ArgumentParser()
     argparser.add_argument('--num-centers', type=int, default=20)
     argparser.add_argument('--top-centers', type=int, default=None)
+    argparser.add_argument('--metric', default='cosine')
+    argparser.add_argument('--type', default='similarity')
     argparser.add_argument('--random', action='store_true')
     argparser.add_argument('--seed', type=int, default=1337)
     argparser.add_argument('--logfile', type=str)
@@ -51,20 +53,24 @@ if __name__ == "__main__":
                 pickle.dump(centers, fp)
 
     print("Calculating distances...")
-    Xtrain = cdist(Xtrain, centers, "cosine")
-    Xtest = cdist(Xtest, centers, "cosine")
-    Xtrain, Xtest = 1 - Xtrain, 1 - Xtest
-
+    Xtrain = cdist(Xtrain, centers, "euclidean")
+    Xtest = cdist(Xtest, centers, "euclidean")
+    if args.type == 'similarity':
+        Xtrain, Xtest = 1 - Xtrain, 1 - Xtest
+        Xtrain = -Xtrain
+        Xtest = -Xtest
+    else:
+        pass
 
     print("Sorting...")
     if args.top_centers is not None:
-        furthest = (-Xtrain).argsort(axis=1)[:, args.top_centers:]
+        furthest = (Xtrain).argsort(axis=1)[:, args.top_centers:]
         rows = np.array([[i] * furthest.shape[1] for i in range(Xtrain.shape[0])]).ravel()
         cols = furthest.ravel()
         if len(rows) > 0:
             Xtrain[rows, cols] = 0
 
-        furthest = (-Xtest).argsort(axis=1)[:, args.top_centers:]
+        furthest = (Xtest).argsort(axis=1)[:, args.top_centers:]
         rows = np.array([[i] * furthest.shape[1] for i in range(Xtest.shape[0])]).ravel()
         cols = furthest.ravel()
         if len(rows) > 0:
